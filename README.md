@@ -1,6 +1,6 @@
 # 2014136141
-const int motorPin = 3;
-void setup() {
+#const int motorPin = 3;
+#void setup() {
 pinMode(motorPin, OUTPUT); 
 } 
 void loop() { 
