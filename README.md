@@ -1,6 +1,7 @@
 #2014136141-song,wonseop
 
 **vibration motor sample code**
+
 const int motorPin = 3;
 void setup() {
 pinMode(motorPin, OUTPUT); 
