@@ -1,6 +1,7 @@
 # 2014136141
-#const int motorPin = 3;
-#void setup() {
+black quotes
+>const int motorPin = 3;
+>void setup() {
 pinMode(motorPin, OUTPUT); 
 } 
 void loop() { 
