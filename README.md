@@ -16,3 +16,15 @@ delay(59000);
 **music shield sample code**
 
 **touch shield sample code**
+*void setup()*{
+        pinMode(irqpin, INPUT);
+        digitalWrite(irqpin, HIGH); //enable pullup resistor
+
+        Serial.begin(9600);
+        Wire.begin();
+
+        mpr121_setup();
+    }
+*void loop()*{ 
+        readTouchInputs();
+    }
