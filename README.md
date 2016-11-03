@@ -13,8 +13,20 @@ digitalWrite(motorPin, LOW);
 delay(59000);
 }
 
-**music shield sample code**
 
+**music shield sample code** 
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3); // 
+RX, TXbyte note = 0; //The MIDI note value to be playedbyte resetMIDI = 4;
+//Tied to VS1053 Reset linebyte ledPin = 13; //MIDI traffic inidicatorint  instrument = 0;
+void setup()
+{
+Serial.begin(57600);  //Setup soft serial for MIDI control  
+mySerial.begin(31250);  //Reset the VS1053  pinMode(resetMIDI, OUTPUT);
+digitalWrite(resetMIDI, LOW);  delay(100);  
+digitalWrite(resetMIDI, HIGH);  delay(100); 
+talkMIDI(0xB0, 0x07, 120); //0xB0 is channel message, set channel volume to near max (127)
+}
 
 
 **touch shield sample code**
