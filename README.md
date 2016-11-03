@@ -28,6 +28,32 @@ digitalWrite(resetMIDI, HIGH);  delay(100); 
 talkMIDI(0xB0, 0x07, 120); //0xB0 is channel message, set channel volume to near max (127)
 }
 
+void loop() {  //Demo Basic MIDI instruments, GM1  //================================================================= 
+Serial.println("Basic Instruments");
+talkMIDI(0xB0, 0, 0x00); //Default bank GM1  //Change to different instrument  
+for(instrument = 0 ; 
+instrument < 127 ; 
+instrument++) { 
+Serial.print(" Instrument: ");    
+Serial.println(instrument, DEC); 
+talkMIDI(0xC0, instrument, 0); //Set instrument number. 0xC0 is a 1 data byte command    //Play notes from F#-0 (30) to F#-5 (90):    for (note = 30 ; note < 40 ; note++) {
+Serial.print("N:"); 
+Serial.println(note, DEC);   //Note on channel 1 (0x90), some note value (note), middle velocity (0x45):    
+noteOn(0, note, 60);    
+delay(50);      //Turn off the note with a given off/release velocity      
+noteOff(0, note, 60);   
+delay(50);   
+} 
+delay(100); //Delay between instruments
+}
+void noteOn(byte channel, byte note, byte attack_velocity) 
+{
+talkMIDI( (0x90 | channel), note, attack_velocity);
+}//Send a MIDI note-off message.  Like releasing a piano keyvoid
+noteOff(byte channel, byte note, byte release_velocity) { 
+talkMIDI( (0x80 | channel), note, release_velocity);}//Plays a MIDI note. Doesn't check to see that cmd is greater than 127, or that data values are less than 127void talkMIDI(byte cmd, byte data1, byte data2) {  digitalWrite(ledPin, HIGH);  mySerial.write(cmd);  mySerial.write(data1);  //Some commands only have one data byte. All cmds less than 0xBn have 2 data bytes 
+if( (cmd & 0xF0) <= 0xB0)    mySerial.write(data2);  digitalWrite(ledPin, LOW);}
+
 
 **touch shield sample code**
 *void setup()*
