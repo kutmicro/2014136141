@@ -1,0 +1,47 @@
+#include <Wire.h>
+#include "Adafruit_MPR121.h"
+
+Adafruit_MPR121 cap1 = Adafruit_MPR121();
+Adafruit_MPR121 cap2 = Adafruit_MPR121();
+//버튼 인스턴스 생성
+
+uint16_t Last_Touched = 0;
+uint16_t Current_Touched = 0;
+//16비트 int자료형 변수
+
+void setup() {
+  while (!Serial);
+  Serial.begin(9600);
+  Serial.println("Adafruit MPR121 Capacitive Touch sensor test");
+
+  if (!cap.begin(0x5A)) {
+    Serial.println("MPR121 not found, check wiring?");
+    while (1);
+  }
+  Serial.println("MPR121 found!");
+}
+//모듈과의 연결 통신 초기화 코드
+//ADD핀을 사용치 않을시 I2C주소는 0x5A,
+//ADD를 3V에 연결시 0x5B, SDA연결시 0x5C,
+//SCL연결시0x5D
+
+void loop() {
+  Current_Touched = cap.touched();
+  for (uint8_t i = 0; i < 12; i++) {
+    if ((Current_Touched & _BV(i)) && !(Last_Touched & _BV(i)) ) {
+      //Serial.print(i); Serial.println(" touched");
+    }
+    if (!(Current_Touched & _BV(i)) && (Last_Touched & _BV(i)) ) {
+      //Serial.print(i); Serial.println(" released");
+    }
+  }
+  Last_Touched = Current_Touched;
+  return;
+}
+//0번부터 11번까지의 버튼이 눌러졌는지 확인한다.
+//captouch()호출하면, 현재 터치결과가 2byte데이터로
+//currtouched 변수에 들어온다.
+//12개 버튼이 모두 인식된 상태면 0000 1111 1111 1111이 들어온다.
+
+//터치감도 바꾸려면 초기화이후에
+//setThreshholeds(uint8_t touch, uint8_t release)
