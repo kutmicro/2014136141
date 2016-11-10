@@ -308,6 +308,48 @@ void talkMIDI(byte cmd, byte data1, byte data2) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void PercussionMessage(byte type, byte velocity) {
+
+
+  VS1053_MIDI.write(0x90 | 9);
+
+    switch(type){
+
+      case 0: VS1053_MIDI.write(CRASH_CYMBAL); break;
+
+      case 1: VS1053_MIDI.write(RIDE_CYMBAL); break;
+
+      case 2: VS1053_MIDI.write(HIGH_HAT); break;
+
+      case 3: VS1053_MIDI.write(LOW_FLOOR_TOM); break;
+
+      case 4: VS1053_MIDI.write(HIGH_FLOOR_TOM); break;
+
+      case 5: VS1053_MIDI.write(LOW_MID_TOM); break;
+
+      case 6: VS1053_MIDI.write(HIGH_MID_TOM); break;
+
+      case 7: VS1053_MIDI.write(LOW_TOM); break;
+
+      case 8: VS1053_MIDI.write(HIGH_TOM); break;
+
+      case 9: VS1053_MIDI.write(ACOUSTIC_SNARE); break;
+
+      case 10: VS1053_MIDI.write(ELECTRIC_SNARE); break;
+
+      case 11: VS1053_MIDI.write(BASS_DRUM); break;
+
+  }
+
+  VS1053_MIDI.write(velocity);
+
+}
+
+
+
 
 
 
