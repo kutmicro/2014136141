@@ -87,7 +87,7 @@ uint16_t  Adafruit_MPR121::filteredData(uint8_t t) {
   return readRegister16(MPR121_FILTDATA_0L + t*2);
 }
 
-uint16_t  Adafruit_MPR121::baselineData(uint8_t t) {
+uint16_t  Adafruit_MPR121::baselineData(uin8_t t) {
   if (t > 12) return 0;
   uint16_t bl = readRegister8(MPR121_BASELINE_0 + t);
   return (bl << 2);
