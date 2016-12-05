@@ -1,6 +1,11 @@
 
 #include <SoftwareSerial.h>
 #define ledbtn1 23 //진동모터 led로 대체 풀업 핀
+#define ledbtn2 25 //진동모터 led로 대체 풀업 핀
+#define ledbtn3 27 //진동모터 led로 대체 풀업 핀
+#define ledbtn4 29 //진동모터 led로 대체 풀업 핀
+#define ledbtn5 31 //진동모터 led로 대체 풀업 핀
+#define ledbtn6 33 //진동모터 led로 대체 풀업 핀
 
 #define btn1  11  // 버튼1의 아두이노 핀번호 정의
 #define btn2  10  // 버튼2의 아두이노 핀번호 정의
@@ -39,6 +44,12 @@ boolean bs11 = false;
 boolean bs12 = false;
 
 boolean ledbr1;
+boolean ledbr2;
+boolean ledbr3;
+boolean ledbr4;
+boolean ledbr5;
+boolean ledbr6;
+
 boolean br1;  // 버튼1 상태 확인용 입력값 임시저장용
 boolean br2;  // 이하, 위와 유사
 boolean br3;
@@ -75,7 +86,17 @@ void setup() {
   //VS1053를 초기화하고 사용할 준비를 합니다.
   pinMode(22,OUTPUT);
   pinMode(23,INPUT_PULLUP);
-
+  pinMode(24,OUTPUT);
+  pinMode(25,INPUT_PULLUP);
+  pinMode(26,OUTPUT);
+  pinMode(27,INPUT_PULLUP);
+  pinMode(28,OUTPUT);
+  pinMode(29,INPUT_PULLUP);
+  pinMode(30,OUTPUT);
+  pinMode(31,INPUT_PULLUP);
+  pinMode(32,OUTPUT);
+  pinMode(33,INPUT_PULLUP);
+  
   pinMode(resetMIDI, OUTPUT);
   digitalWrite(resetMIDI, LOW);
   delay(100);
@@ -116,10 +137,16 @@ void loop() {
     br1 = digitalRead(btn1);
     ledbr1=digitalRead(ledbtn1);
     br2 = digitalRead(btn2);
+    ledbr2=digitalRead(ledbtn2);
     br3 = digitalRead(btn3);
+    ledbr3=digitalRead(ledbtn3);
     br4 = digitalRead(btn4);
+    ledbr4=digitalRead(ledbtn4);
     br5 = digitalRead(btn5);
+    ledbr5=digitalRead(ledbtn5);
     br6 = digitalRead(btn6);
+    ledbr6=digitalRead(ledbtn6);
+    
     br7 = digitalRead(btn7);
     br8 = digitalRead(btn8);
     br9 = digitalRead(btn9);
@@ -129,9 +156,39 @@ void loop() {
 
     if(ledbr1==0) //풀업저항 연결해 버튼누르면 led점등
     {
-      digitalWrite(22,1);
+      analogWrite(22,100);
     }
      else digitalWrite(22,0);
+     
+    if(ledbr2==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      analogWrite(24,100);
+    }
+     else digitalWrite(24,0);
+     
+     if(ledbr3==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      analogWrite(26,100);
+    }
+     else digitalWrite(26,0);
+     
+     if(ledbr4==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      analogWrite(28,100);
+    }
+     else digitalWrite(28,0);
+     
+     if(ledbr5==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      analogWrite(30,200);
+    }
+     else digitalWrite(30,0);
+
+     if(ledbr6==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      analogWrite(32,200);
+    }
+     else digitalWrite(32,0);
      
    if( !bs1 && !br1 ){
     noteOn(0x99, 35,100); //북소리      
@@ -148,39 +205,40 @@ void loop() {
      noteOff(0, 51,0);   
      bs2 = false;
    }   
-
-
-
-
    
    if( !bs3 && !br3 ){
-     noteOn(0, bn3,100);
+     noteOn(0x99, 52,100);
      bs3 = true;
    }else if(bs3 && br3){
-     noteOff(0, bn3,0);   
+     noteOff(0, 52,0);   
      bs3 = false;
    }
    if( !bs4 && !br4 ){
-     noteOn(0, bn4,100);
+     noteOn(0x99, 54,100);
      bs4 = true;
    }else if(bs4 && br4){
-     noteOff(0, bn4,0);   
+     noteOff(0, 54,0);   
      bs4 = false;
    }
    if( !bs5 && !br5 ){
-     noteOn(0, bn5,100);
+     noteOn(0x99, 55,100);
      bs5 = true;
    }else if(bs5 && br5){
-     noteOff(0, bn5,0);   
+     noteOff(0, 55,0);   
      bs5 = false;
    }   
    if( !bs6 && !br6 ){
-     noteOn(0, bn6,100);
+     noteOn(0x99, 57,100);
      bs6 = true;
    }else if(bs6 && br6){
-     noteOff(0, bn6,0);   
+     noteOff(0, 57,0);   
      bs6 = false;
    }   
+
+
+
+
+
    
    if( !bs7 && !br7 ){
      noteOn(0, bn7,100);
