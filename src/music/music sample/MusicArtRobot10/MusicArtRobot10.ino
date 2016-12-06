@@ -1,43 +1,4 @@
 
-<<<<<<< HEAD
-
- MIDI악기쉴드에 대한 아래의 영문정보도 참고하세요.
-  
- This code works with the VS1053 Breakout Board and controls the VS1053 in what is called Real Time MIDI mode. 
- To get the VS1053 into RT MIDI mode, power up the VS1053 breakout board with GPIO0 tied low, GPIO1 tied high.
- 
- I use the NewSoftSerial library to send out the MIDI serial at 31250bps. This allows me to print regular messages
- for debugging to the terminal window. This helped me out a ton.
- 
- 5V : VS1053 VCC
- GND : VS1053 GND
- D3 (SoftSerial TX) : VS1053 RX
- D4 : VS1053 RESET
- 
- Attach a headphone breakout board to the VS1053:
- VS1053 LEFT : TSH
- VS1053 RIGHT : RSH
- VS1053 GBUF : GND
- 
- When in the drum bank (0x78), there are not different instruments, only different notes.
- To play the different sounds, select an instrument # like 5, then play notes 27 to 87.
- 
- To play "Sticks" (31):
- talkMIDI(0xB0, 0, 0x78); //Bank select: drums
- talkMIDI(0xC0, 5, 0); //Set instrument number
- //Play note on channel 1 (0x90), some note value (note), middle velocity (60):
- noteOn(0, 31, 60);
- 
- */
- 
-#include <NewSoftSerial.h>
-#define btn1  11	// 버튼1의 아두이노 핀번호 정의
-#define btn2  10	// 버튼2의 아두이노 핀번호 정의
-#define btn3  9		// 버튼3의 아두이노 핀번호 정의
-#define btn4  8		// 버튼4의 아두이노 핀번호 정의
-#define btn5  7		// 버튼5의 아두이노 핀번호 정의
-#define btn6  6		// 버튼6의 아두이노 핀번호 정의
-=======
 #include <SoftwareSerial.h>
 #define ledbtn1 23 //진동모터 led로 대체 풀업 핀
 #define ledbtn2 25 //진동모터 led로 대체 풀업 핀
@@ -52,7 +13,6 @@
 #define btn4  8   // 버튼4의 아두이노 핀번호 정의
 #define btn5  7   // 버튼5의 아두이노 핀번호 정의
 #define btn6  6   // 버튼6의 아두이노 핀번호 정의
->>>>>>> 65012a046ae134a706740c637d5d7ef0cce7e20c
 #define btn7  5   // 버튼7의 아두이노 핀번호 정의
 // 3:midi rx , 4:midi reset  아두이노 핀 3번 4번은 이미 사용중
 #define btn8  2   // 버튼8의 아두이노 핀번호 정의 
@@ -64,7 +24,7 @@
 
 #define defaultPatch 15 //악기 초기화 버튼 설정 악기번호
 
-NewSoftSerial mySerial(2, 3); //SW시리얼핀 정의 D3이 MIDI신호 전송용,  D2는 미사용 
+SoftwareSerial mySerial(2, 3); //SW시리얼핀 정의 D3이 MIDI신호 전송용,  D2는 미사용 
 
 byte note = 0; //The MIDI연주될 note(음계)
 byte resetMIDI = 4; // VS1053 Reset용 핀
@@ -151,7 +111,6 @@ void setup() {
   
   pinMode( btn3, INPUT);
   digitalWrite( btn3, HIGH);
-  
   pinMode( btn4, INPUT);
   digitalWrite( btn4, HIGH);
   pinMode( btn5, INPUT);
@@ -369,3 +328,4 @@ void talkMIDI(byte cmd, byte data1, byte data2) {
 
   digitalWrite(ledPin, LOW);
 }
+
