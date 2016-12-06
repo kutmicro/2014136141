@@ -53,7 +53,7 @@
  
  */
  
-#include <SoftwareSerial.h>
+#include <NewSoftSerial.h>
 #define btn1  11	// 버튼1의 아두이노 핀번호 정의
 #define btn2  10	// 버튼2의 아두이노 핀번호 정의
 #define btn3  9		// 버튼3의 아두이노 핀번호 정의
@@ -71,7 +71,7 @@
 
 #define defaultPatch 15 //악기 초기화 버튼 설정 악기번호
 
-SoftwareSerial mySerial(2, 3); //SW시리얼핀 정의 D3이 MIDI신호 전송용,  D2는 미사용 
+NewSoftSerial mySerial(2, 3); //SW시리얼핀 정의 D3이 MIDI신호 전송용,  D2는 미사용 
 
 byte note = 0; //The MIDI연주될 note(음계)
 byte resetMIDI = 4; // VS1053 Reset용 핀
@@ -138,6 +138,7 @@ void setup() {
   
   pinMode( btn3, INPUT);
   digitalWrite( btn3, HIGH);
+  
   pinMode( btn4, INPUT);
   digitalWrite( btn4, HIGH);
   pinMode( btn5, INPUT);
