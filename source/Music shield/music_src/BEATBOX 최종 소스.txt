@@ -1,0 +1,456 @@
+
+#include <SoftwareSerial.h>
+#include"Adafruit_VS1053.h"
+#define SIZE 100   //녹음용 배열 사이즈 
+#define ledbtn1 43
+#define ledbtn2 45
+#define ledbtn3 47
+#define ledbtn4 49
+#define ledbtn5 31 //진동모터 led로 대체 풀업 핀
+#define ledbtn6 33 //진동모터 led로 대체 풀업 핀
+
+//악기 3종류
+#define vol1 35 //55 75 
+#define vol2 36 //56 76
+#define vol3 42 //62 82
+#define vol4 44 //64 84
+#define vol5 38 //58 78
+#define vol6 40 //60 80
+
+
+
+
+
+#define btn1  11  // 버튼1의 아두이노 핀번호 정의
+#define btn2  10  // 버튼2의 아두이노 핀번호 정의
+#define btn3  9   // 버튼3의 아두이노 핀번호 정의
+#define btn4  8   // 버튼4의 아두이노 핀번호 정의
+#define btn5  7   // 버튼5의 아두이노 핀번호 정의
+#define btn6  6   // 버튼6의 아두이노 핀번호 정의
+#define btn7  5   // 버튼7의 아두이노 핀번호 정의
+#define btn8  2   // 버튼8의 아두이노 핀번호 정의 
+      // 3:midi rx , 4:midi reset  아두이노 핀 3번 4번은 이미 사용중
+                  //(SoftSerial에서 Rx핀으로 선언되지만 재 세팅 후 버튼용으로 사용)
+#define btn9 A5   // 버튼9의 아두이노 핀번호 정의
+#define btn10 A4  // 버튼10의 아두이노 핀번호 정의
+#define btn11 A3  // 버튼11의 아두이노 핀번호 정의
+#define btn12 A2  // 버튼12의 아두이노 핀번호 정의
+#define defaultPatch 15 //악기 초기화 버튼 설정 악기번호
+
+#define btn40 A8//녹음용
+
+SoftwareSerial mySerial(2, 3); //SW시리얼핀 정의 D3이 MIDI신호 전송용,  D2는 미사용 
+
+byte note = 0; //The MIDI연주될 note(음계)
+byte resetMIDI = 4; // VS1053 Reset용 핀
+byte ledPin = 13; //MIDI 트래픽 표시용 LED
+ 
+boolean bs1 = false;  // 버튼1의 현재상태(눌림 or 안눌림)
+boolean bs2 = false;  // 이하, 위와 유사
+boolean bs3 = false;
+boolean bs4 = false;
+boolean bs5 = false;
+boolean bs6 = false;
+boolean bs7 = false;
+boolean bs8 = false;
+boolean bs9 = false;
+boolean bs10 = false;
+boolean bs11 = false;
+boolean bs12 = false;
+
+boolean bs40 = false; //녹음용
+
+boolean ledbr1; //풀업저항에서 오는 값 받을 변수 
+boolean ledbr2;
+boolean ledbr3;
+boolean ledbr4;
+boolean ledbr5;
+boolean ledbr6;
+
+int arr[SIZE]; //녹음용 정수형 배열
+long recoarr1[SIZE]; //녹음용 정수형 배열 이곳에 각 버튼이 입력 할 때마다 millis()함수로 값을 넣는다.
+long recoarr2[SIZE]; //recoarr1에서 넣고 카운트의 크기가 2 이상이면 버블식으로 앞에부터 차를 구해 이곳에 넣는다. 실질적으로 레코드함수에서 사용할 배열이다.
+int count=0;//녹음 버튼 클릭후 각 버튼 누를 때 카운트 
+int a=0; //녹음 함수 반복문 변수
+int i=0;
+int j=0;
+int startrecord=0;
+int ledemit[SIZE]; //녹은된 음을 재생할 때 그 버튼이 보내는 LED발광하게 핀번호를 담는 배열
+int slow=0; //녹음재생 느리게 변수
+int test=0;//악기변경 변수
+
+boolean br1;  // 버튼1 상태 확인용 입력값 임시저장용
+boolean br2;  // 이하, 위와 유사
+boolean br3;
+boolean br4;
+boolean br5;
+boolean br6;
+boolean br7;
+boolean br8;
+boolean br9;
+boolean br10;
+boolean br11;
+boolean br12;
+
+boolean br40; //녹음용
+
+int patch = 0; //악기 대응, 연주될 악기 종류 (0~127: 기본 128 가지 선택가능)
+
+int bn1 = 60; //버튼1의  note(음계)  가령 "도"  0~127까지 지정가능 (정확한 음계 설정은 MIDI   관련정보참고)
+int bn2 = 62; //버튼2의  note(음계)  가령 "레"
+int bn3 = 64; //버튼3의  note(음계)  가령 "미"
+int bn4 = 65; //버튼4의  note(음계)  가령 "파"
+int bn5 = 67; //버튼5의  note(음계)  가령 "솔"
+int bn6 = 69; //버튼6의  note(음계)  가령 "라"
+int bn7 = 71; //버튼7의  note(음계)  가령 "시"
+int bn8 = 72; //버튼8의  note(음계)  가령 "도~"
+
+byte byteData;
+
+void setup() {
+        //PC와 아두이노와의 시리얼통신 준비
+  Serial.begin(31250);
+
+           //미디컨트롤을 위한 소프트웨어 시리얼을 준비합니다.
+  mySerial.begin(31250);
+  
+      //VS1053를 초기화하고 사용할 준비를 합니다.
+  pinMode(42,OUTPUT);
+  pinMode(43,INPUT_PULLUP);
+  pinMode(44,OUTPUT);
+  pinMode(45,INPUT_PULLUP);
+  pinMode(46,OUTPUT);
+  pinMode(47,INPUT_PULLUP);
+  pinMode(48,OUTPUT);
+  pinMode(49,INPUT_PULLUP);
+  pinMode(30,OUTPUT);
+  pinMode(31,INPUT_PULLUP);
+  pinMode(32,OUTPUT);
+  pinMode(33,INPUT_PULLUP);
+  
+  pinMode(resetMIDI, OUTPUT);
+  digitalWrite(resetMIDI, LOW);
+  delay(100);
+  digitalWrite(resetMIDI, HIGH);
+  delay(100);
+  
+  pinMode( btn1, INPUT);      // 버튼1 입력용 핀모드를  입력모드로 전환
+  digitalWrite( btn1, HIGH);  // 내부 PullUp 설정, 스위치의 나머지 한선은 GND에 물리면 됩니         다.(초간단)
+
+  pinMode( btn2, INPUT);      // 이하, 위와 유사
+  digitalWrite( btn2, HIGH);
+  pinMode( btn3, INPUT);
+  digitalWrite( btn3, HIGH);
+  pinMode( btn4, INPUT);
+  digitalWrite( btn4, HIGH);
+  pinMode( btn5, INPUT);
+  digitalWrite( btn5, HIGH);
+  pinMode( btn6, INPUT);
+  digitalWrite( btn6, HIGH);
+  pinMode( btn7, INPUT);
+  digitalWrite( btn7, HIGH);
+  pinMode( btn8, INPUT);
+  digitalWrite( btn8, HIGH);
+  pinMode( btn9, INPUT);
+  digitalWrite( btn9, HIGH);
+  pinMode( btn10, INPUT);
+  digitalWrite( btn10, HIGH);
+  pinMode( btn11, INPUT);
+  digitalWrite( btn11, HIGH);  
+  pinMode( btn12, INPUT);
+  digitalWrite( btn12, HIGH);  
+  
+  pinMode( btn40, INPUT);
+  digitalWrite( btn40, HIGH);  
+
+}
+
+void loop() {
+    br1 = digitalRead(btn1);  //풀업 읽어온다. MIDI출력용
+    br2 = digitalRead(btn2);
+    br3 = digitalRead(btn3);
+    br4 = digitalRead(btn4);
+    br5 = digitalRead(btn5);
+    br6 = digitalRead(btn6);
+    br40=digitalRead(btn40);
+    
+    ledbr1=digitalRead(ledbtn1);  //풀업 읽어온다. LED출력용
+    ledbr2=digitalRead(ledbtn2);
+    ledbr3=digitalRead(ledbtn3);
+    ledbr4=digitalRead(ledbtn4);
+    ledbr5=digitalRead(ledbtn5);
+    ledbr6=digitalRead(ledbtn6);
+    
+    br7 = digitalRead(btn7);
+    br8 = digitalRead(btn8);
+    br9 = digitalRead(btn9);
+    br10 = digitalRead(btn10);
+    br11 = digitalRead(btn11);
+    br12 = digitalRead(btn12);    
+
+    if(ledbr1==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      digitalWrite(42,1);
+    }
+     else digitalWrite(42,0);
+   if(ledbr2==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      digitalWrite(44,1);
+    }
+     else digitalWrite(44,0);
+   if(ledbr3==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      digitalWrite(46,1);
+    }
+     else digitalWrite(46,0);
+   if(ledbr4==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      digitalWrite(48,1);
+    }
+     else digitalWrite(48,0);
+     if(ledbr5==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      digitalWrite(30,1);
+    }
+     else digitalWrite(30,0);
+
+     if(ledbr6==0) //풀업저항 연결해 버튼누르면 led점등
+    {
+      digitalWrite(32,1);
+    }
+     else digitalWrite(32,0);
+   
+    
+   if( !bs1 && !br1 ){
+    noteOn(0x99, vol1+test,100); // 1번 버튼 북소리     
+     bs1 = true;
+    if(startrecord==1)// 녹음 버튼이 눌리고 스타트레코드에 1이 들어 있으면 음원 넣기.
+  {
+     arr[i]=vol1+test;
+     i++;
+      recoarr1[count]=millis();
+      ledemit[count]=ledbtn6;
+      count++;
+  }
+   }
+   else if(bs1 && br1){
+     noteOff(0, vol1+test,0);   
+     bs1 = false;
+   }
+
+   
+   if( !bs2 && !br2 ){
+     noteOn(0x99, vol2+test,100);  //북소리
+     bs2 = true;
+     if(startrecord==1)// 녹음 버튼이 눌리고 스타트레코드에 1이 들어 있으면 음원 넣기.
+  {
+  arr[i]=vol2+test;
+     i++;
+  recoarr1[count]=millis();//이 버튼이 눌렸을 때 시간을 반환한다.
+  ledemit[count]=ledbtn5;
+  count++;
+  }
+   }else if(bs2 && br2){
+     noteOff(0, vol2+test,0);   
+     bs2 = false;
+   }   
+
+   
+   if( !bs3 && !br3 ){
+     
+     noteOn(0x99, vol3+test,100);
+     
+     bs3 = true;
+     if(startrecord==1)// 녹음 버튼이 눌리고 스타트레코드에 1이 들어 있으면 음원 넣기.
+  {
+       arr[i]=vol3+test;
+       i++;
+      recoarr1[count]=millis();
+      ledemit[count]=ledbtn1;
+      count++;
+  }
+   }else if(bs3 && br3){
+     noteOff(0, vol3+test,0);   
+     bs3 = false;
+   }
+   if( !bs4 && !br4 ){
+     noteOn(0x99, vol4+test,100);
+     bs4 = true;
+     if(startrecord==1)// 녹음 버튼이 눌리고 스타트레코드에 1이 들어 있으면 음원 넣기.
+  {
+     arr[i]=vol4+test;
+     i++;
+      recoarr1[count]=millis();
+      ledemit[count]=ledbtn2;
+     count++;
+  }
+   }else if(bs4 && br4){
+     noteOff(0, vol4+test,0);   
+     bs4 = false;
+   }
+   if( !bs5 && !br5 ){
+     noteOn(0x99, vol5,100);
+     bs5 = true;
+     if(startrecord==1)// 녹음 버튼이 눌리고 스타트레코드에 1이 들어 있으면 음원 넣기.
+  {
+     arr[i]=vol5;
+     i++;
+      recoarr1[count]=millis();
+      ledemit[count]=ledbtn3;
+     count++;
+  }
+   }else if(bs5 && br5){
+     noteOff(0, vol5+test,0);   
+     bs5 = false;
+   }   
+   
+   if( !bs6 && !br6 ){
+     noteOn(0x99, vol6+test,100);
+     bs6 = true;
+     if(startrecord==1)// 녹음 버튼이 눌리고 스타트레코드에 1이 들어 있으면 음원 넣기.
+  {
+     arr[i]=vol6+test;
+     i++;
+      recoarr1[count]=millis();
+      ledemit[count]=ledbtn4;
+      count++;
+  }
+  
+   }else if(bs6 && br6){
+     noteOff(0, vol6+test,0);   
+     bs6 = false;
+   }   
+
+   if( !bs7 && !br7 ){
+     slow=100;
+     bs7 = true;
+   }else if(bs7 && br7){
+     bs7 = false;
+   } 
+   
+   /* 
+   if( !bs8 && !br8 ){
+     noteOn(0, bn8,100);
+     bs8 = true;
+   }else if(bs8 && br8){
+     noteOff(0, bn8,0);   
+     bs8 = false;
+   }   
+   */
+  
+   if( !bs9 && !br9 ){ //patch up (max:127) //악기변경
+    if(test!=40)
+    {
+      test=test+20;
+    }
+    else
+      test=0;
+      
+     bs9 = true;
+   }else if(bs9 && br9){
+     bs9 = false;
+   }   
+   /*
+   if( !bs10 && !br10 ){ //patch down (min:0) //악기변경
+     patch--;
+     if(patch < 0) patch = 127;
+     talkMIDI(0xc0, patch, 0);       
+     bs10 = true;
+   }else if(bs10 && br10){
+     bs10 = false;
+   }   
+   */
+   if( !bs11 && !br11 ){
+     //bank 0x78(drum)
+     talkMIDI(0xb0, 0, 0x78);
+     talkMIDI(0xb0,20, 0);
+     talkMIDI(0xc0, patch, 0);     
+     bs11 = true;
+   }else if(bs11 && br11){
+     bs11 = false;
+   }   
+   
+   if( !bs12 && !br12 ){
+     //bank MSB 0, default instruments
+     patch = defaultPatch;
+     talkMIDI(0xb0, 0, 0);
+     talkMIDI(0xb0,20, 0);
+     talkMIDI(0xc0, patch, 0);       
+     bs12 = true;
+   }else if(bs12 && br12){
+     bs12 = false;
+   }   
+           
+
+                                              //녹음
+
+    if( !bs40 && !br40 ){
+  startrecord++;  //현재 1로 만들고 빠져나온다.
+                  //두 번째 누르면 2가 되고 녹음 한 것을 실행
+                  //그리고 0을 만들어 초기화 한다.
+      
+  if(startrecord==2)                //녹음 버튼을 두 번째 누를 경우 (녹음이 끝난 경우의 수)
+  {
+    for(a=0;a<count-1;a++)          //담겨있던 딜레이의 차를 구해서 다시 배열에 넣어준다.
+     {
+      recoarr2[a]=recoarr1[a+1]-recoarr1[a];
+     }
+      for(j=0;j<i;j++)                         //녹음을 재생하는 부분
+    {
+       
+      noteOn(0x90|9, arr[j],100);           // 배열에 들어있던 음 반복문으로 재생
+      digitalWrite(ledemit[j]-1,1);         //배열에 들어있는 led발광 순서를 write한다.
+      
+     
+      delay(10);
+      delay(slow);
+      digitalWrite(ledemit[j]-1,0);
+      delay(recoarr2[j]);
+      noteOff(0,arr[j],0);
+    }
+   count=0;
+  startrecord=0;//녹음 변수 초기화 버튼 활성화
+  i=0;
+  slow=0;
+  }
+
+     bs40 = true;
+   }else if(bs40 && br40){
+     bs40 = false;
+   }  
+
+
+
+  //*************** MIDI LOOPBACK ******************//
+  if(Serial.available() > 0)
+  {
+    byteData =  Serial.read();
+    mySerial.write( byteData);
+  }  
+     
+
+}
+
+//노트 온 미디 메세지를 송출합니다. 버튼이 눌린상태와 같습니다.
+//채널 범위는 0-15 입니다.
+void noteOn(byte channel, byte note, byte attack_velocity) {
+  talkMIDI( (0x90 | channel), note, attack_velocity);
+}
+
+//노트 오프 미디 메세지를 송출합니다. 버튼이 눌리지 않은 상태와 같습니다.
+void noteOff(byte channel, byte note, byte release_velocity) {
+  talkMIDI( (0x80 | channel), note, release_velocity);
+}
+
+void talkMIDI(byte cmd, byte data1, byte data2) {
+  digitalWrite(ledPin, HIGH);
+  mySerial.write(cmd );
+  mySerial.write(data1 );
+
+  //모든 명령은 1바이트를 지니며, 모든 cmds는   0xBn보다  2 데이터 바이트를 덜 지닙니다.  
+  //(sort of: http://253.ccarh.org/handout/midiprotocol/)
+  if( (cmd & 0xF0) <= 0xB0)
+    mySerial.write(data2 );
+
+  digitalWrite(ledPin, LOW);
+}

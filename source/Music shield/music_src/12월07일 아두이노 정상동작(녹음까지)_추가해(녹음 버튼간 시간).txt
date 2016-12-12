@@ -1,38 +1,40 @@
 
 #include <SoftwareSerial.h>
 
+#define SIZE 100   //³ìÀ½¿ë ¹è¿­ »çÀÌÁî 
 #define ledbtn1 43
 #define ledbtn2 45
 #define ledbtn3 47
 #define ledbtn4 49
-#define ledbtn5 31 //ì§„ë™ëª¨í„° ledë¡œ ëŒ€ì²´ í’€ì—… í•€
-#define ledbtn6 33 //ì§„ë™ëª¨í„° ledë¡œ ëŒ€ì²´ í’€ì—… í•€
+#define ledbtn5 31 //Áøµ¿¸ğÅÍ led·Î ´ëÃ¼ Ç®¾÷ ÇÉ
+#define ledbtn6 33 //Áøµ¿¸ğÅÍ led·Î ´ëÃ¼ Ç®¾÷ ÇÉ
 
-#define btn1  11  // ë²„íŠ¼1ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn2  10  // ë²„íŠ¼2ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn3  9   // ë²„íŠ¼3ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn4  8   // ë²„íŠ¼4ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn5  7   // ë²„íŠ¼5ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn6  6   // ë²„íŠ¼6ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn7  5   // ë²„íŠ¼7ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-// 3:midi rx , 4:midi reset  ì•„ë‘ì´ë…¸ í•€ 3ë²ˆ 4ë²ˆì€ ì´ë¯¸ ì‚¬ìš©ì¤‘
-#define btn8  2   // ë²„íŠ¼8ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜ 
-                  //(SoftSerialì—ì„œ Rxí•€ìœ¼ë¡œ ì„ ì–¸ë˜ì§€ë§Œ ì¬ ì„¸íŒ… í›„ ë²„íŠ¼ìš©ìœ¼ë¡œ ì‚¬ìš©)
-#define btn9 A5   // ë²„íŠ¼9ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn10 A4  // ë²„íŠ¼10ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn11 A3  // ë²„íŠ¼11ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
-#define btn12 A2  // ë²„íŠ¼12ì˜ ì•„ë‘ì´ë…¸ í•€ë²ˆí˜¸ ì •ì˜
+#define btn1  11  // ¹öÆ°1ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn2  10  // ¹öÆ°2ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn3  9   // ¹öÆ°3ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn4  8   // ¹öÆ°4ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn5  7   // ¹öÆ°5ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn6  6   // ¹öÆ°6ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn7  5   // ¹öÆ°7ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn8  2   // ¹öÆ°8ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ 
+      // 3:midi rx , 4:midi reset  ¾ÆµÎÀÌ³ë ÇÉ 3¹ø 4¹øÀº ÀÌ¹Ì »ç¿ëÁß
+                  //(SoftSerial¿¡¼­ RxÇÉÀ¸·Î ¼±¾ğµÇÁö¸¸ Àç ¼¼ÆÃ ÈÄ ¹öÆ°¿ëÀ¸·Î »ç¿ë)
+#define btn9 A5   // ¹öÆ°9ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn10 A4  // ¹öÆ°10ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn11 A3  // ¹öÆ°11ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define btn12 A2  // ¹öÆ°12ÀÇ ¾ÆµÎÀÌ³ë ÇÉ¹øÈ£ Á¤ÀÇ
+#define defaultPatch 15 //¾Ç±â ÃÊ±âÈ­ ¹öÆ° ¼³Á¤ ¾Ç±â¹øÈ£
 
-#define defaultPatch 15 //ì•…ê¸° ì´ˆê¸°í™” ë²„íŠ¼ ì„¤ì • ì•…ê¸°ë²ˆí˜¸
+#define btn40 A8//³ìÀ½¿ë
 
-SoftwareSerial mySerial(2, 3); //SWì‹œë¦¬ì–¼í•€ ì •ì˜ D3ì´ MIDIì‹ í˜¸ ì „ì†¡ìš©,  D2ëŠ” ë¯¸ì‚¬ìš© 
+SoftwareSerial mySerial(2, 3); //SW½Ã¸®¾óÇÉ Á¤ÀÇ D3ÀÌ MIDI½ÅÈ£ Àü¼Û¿ë,  D2´Â ¹Ì»ç¿ë 
 
-byte note = 0; //The MIDIì—°ì£¼ë  note(ìŒê³„)
-byte resetMIDI = 4; // VS1053 Resetìš© í•€
-byte ledPin = 13; //MIDI íŠ¸ë˜í”½ í‘œì‹œìš© LED
+byte note = 0; //The MIDI¿¬ÁÖµÉ note(À½°è)
+byte resetMIDI = 4; // VS1053 Reset¿ë ÇÉ
+byte ledPin = 13; //MIDI Æ®·¡ÇÈ Ç¥½Ã¿ë LED
  
-boolean bs1 = false;  // ë²„íŠ¼1ì˜ í˜„ì¬ìƒíƒœ(ëˆŒë¦¼ or ì•ˆëˆŒë¦¼)
-boolean bs2 = false;  // ì´í•˜, ìœ„ì™€ ìœ ì‚¬
+boolean bs1 = false;  // ¹öÆ°1ÀÇ ÇöÀç»óÅÂ(´­¸² or ¾È´­¸²)
+boolean bs2 = false;  // ÀÌÇÏ, À§¿Í À¯»ç
 boolean bs3 = false;
 boolean bs4 = false;
 boolean bs5 = false;
@@ -44,16 +46,22 @@ boolean bs10 = false;
 boolean bs11 = false;
 boolean bs12 = false;
 
+boolean bs40 = false; //³ìÀ½¿ë
 
-boolean ledbr1;
+boolean ledbr1; //Ç®¾÷ÀúÇ×¿¡¼­ ¿À´Â °ª ¹ŞÀ» º¯¼ö 
 boolean ledbr2;
 boolean ledbr3;
 boolean ledbr4;
 boolean ledbr5;
 boolean ledbr6;
 
-boolean br1;  // ë²„íŠ¼1 ìƒíƒœ í™•ì¸ìš© ì…ë ¥ê°’ ì„ì‹œì €ì¥ìš©
-boolean br2;  // ì´í•˜, ìœ„ì™€ ìœ ì‚¬
+int arr[SIZE]; //³ìÀ½¿ë Á¤¼öÇü ¹è¿­
+int i=0;
+int j=0;
+int startrecord=0;
+
+boolean br1;  // ¹öÆ°1 »óÅÂ È®ÀÎ¿ë ÀÔ·Â°ª ÀÓ½ÃÀúÀå¿ë
+boolean br2;  // ÀÌÇÏ, À§¿Í À¯»ç
 boolean br3;
 boolean br4;
 boolean br5;
@@ -65,27 +73,29 @@ boolean br10;
 boolean br11;
 boolean br12;
 
-int patch = 0; //ì•…ê¸° ëŒ€ì‘, ì—°ì£¼ë  ì•…ê¸° ì¢…ë¥˜ (0~127: ê¸°ë³¸ 128 ê°€ì§€ ì„ íƒê°€ëŠ¥)
+boolean br40; //³ìÀ½¿ë
 
-int bn1 = 60; //ë²„íŠ¼1ì˜  note(ìŒê³„)  ê°€ë ¹ "ë„"  0~127ê¹Œì§€ ì§€ì •ê°€ëŠ¥ (ì •í™•í•œ ìŒê³„ ì„¤ì •ì€ MIDIê´€ë ¨ì •ë³´ì°¸ê³ )
-int bn2 = 62; //ë²„íŠ¼2ì˜  note(ìŒê³„)  ê°€ë ¹ "ë ˆ"
-int bn3 = 64; //ë²„íŠ¼3ì˜  note(ìŒê³„)  ê°€ë ¹ "ë¯¸"
-int bn4 = 65; //ë²„íŠ¼4ì˜  note(ìŒê³„)  ê°€ë ¹ "íŒŒ"
-int bn5 = 67; //ë²„íŠ¼5ì˜  note(ìŒê³„)  ê°€ë ¹ "ì†”"
-int bn6 = 69; //ë²„íŠ¼6ì˜  note(ìŒê³„)  ê°€ë ¹ "ë¼"
-int bn7 = 71; //ë²„íŠ¼7ì˜  note(ìŒê³„)  ê°€ë ¹ "ì‹œ"
-int bn8 = 72; //ë²„íŠ¼8ì˜  note(ìŒê³„)  ê°€ë ¹ "ë„~"
+int patch = 0; //¾Ç±â ´ëÀÀ, ¿¬ÁÖµÉ ¾Ç±â Á¾·ù (0~127: ±âº» 128 °¡Áö ¼±ÅÃ°¡´É)
+
+int bn1 = 60; //¹öÆ°1ÀÇ  note(À½°è)  °¡·É "µµ"  0~127±îÁö ÁöÁ¤°¡´É (Á¤È®ÇÑ À½°è ¼³Á¤Àº MIDI   °ü·ÃÁ¤º¸Âü°í)
+int bn2 = 62; //¹öÆ°2ÀÇ  note(À½°è)  °¡·É "·¹"
+int bn3 = 64; //¹öÆ°3ÀÇ  note(À½°è)  °¡·É "¹Ì"
+int bn4 = 65; //¹öÆ°4ÀÇ  note(À½°è)  °¡·É "ÆÄ"
+int bn5 = 67; //¹öÆ°5ÀÇ  note(À½°è)  °¡·É "¼Ö"
+int bn6 = 69; //¹öÆ°6ÀÇ  note(À½°è)  °¡·É "¶ó"
+int bn7 = 71; //¹öÆ°7ÀÇ  note(À½°è)  °¡·É "½Ã"
+int bn8 = 72; //¹öÆ°8ÀÇ  note(À½°è)  °¡·É "µµ~"
 
 byte byteData;
 
 void setup() {
+        //PC¿Í ¾ÆµÎÀÌ³ë¿ÍÀÇ ½Ã¸®¾óÅë½Å ÁØºñ
   Serial.begin(31250);
 
-  //ë¯¸ë””ì»¨íŠ¸ë¡¤ì„ ìœ„í•œ ì†Œí”„íŠ¸ì›¨ì–´ ì‹œë¦¬ì–¼ì„ ì¤€ë¹„í•©ë‹ˆë‹¤.
+           //¹ÌµğÄÁÆ®·ÑÀ» À§ÇÑ ¼ÒÇÁÆ®¿ş¾î ½Ã¸®¾óÀ» ÁØºñÇÕ´Ï´Ù.
   mySerial.begin(31250);
-//  mySerial2.begin(57600);
   
-  //VS1053ë¥¼ ì´ˆê¸°í™”í•˜ê³  ì‚¬ìš©í•  ì¤€ë¹„ë¥¼ í•©ë‹ˆë‹¤.
+      //VS1053¸¦ ÃÊ±âÈ­ÇÏ°í »ç¿ëÇÒ ÁØºñ¸¦ ÇÕ´Ï´Ù.
   pinMode(42,OUTPUT);
   pinMode(43,INPUT_PULLUP);
   pinMode(44,OUTPUT);
@@ -105,12 +115,11 @@ void setup() {
   digitalWrite(resetMIDI, HIGH);
   delay(100);
   
-  pinMode( btn1, INPUT);      // ë²„íŠ¼1 ì…ë ¥ìš© í•€ëª¨ë“œë¥¼  ì…ë ¥ëª¨ë“œë¡œ ì „í™˜
-  digitalWrite( btn1, HIGH);  // ë‚´ë¶€ PullUp ì„¤ì •, ìŠ¤ìœ„ì¹˜ì˜ ë‚˜ë¨¸ì§€ í•œì„ ì€ GNDì— ë¬¼ë¦¬ë©´ ë©ë‹ˆë‹¤.(ì´ˆê°„ë‹¨)
+  pinMode( btn1, INPUT);      // ¹öÆ°1 ÀÔ·Â¿ë ÇÉ¸ğµå¸¦  ÀÔ·Â¸ğµå·Î ÀüÈ¯
+  digitalWrite( btn1, HIGH);  // ³»ºÎ PullUp ¼³Á¤, ½ºÀ§Ä¡ÀÇ ³ª¸ÓÁö ÇÑ¼±Àº GND¿¡ ¹°¸®¸é µË´Ï         ´Ù.(ÃÊ°£´Ü)
 
-  pinMode( btn2, INPUT);      // ì´í•˜, ìœ„ì™€ ìœ ì‚¬
+  pinMode( btn2, INPUT);      // ÀÌÇÏ, À§¿Í À¯»ç
   digitalWrite( btn2, HIGH);
-  
   pinMode( btn3, INPUT);
   digitalWrite( btn3, HIGH);
   pinMode( btn4, INPUT);
@@ -123,7 +132,6 @@ void setup() {
   digitalWrite( btn7, HIGH);
   pinMode( btn8, INPUT);
   digitalWrite( btn8, HIGH);
-  
   pinMode( btn9, INPUT);
   digitalWrite( btn9, HIGH);
   pinMode( btn10, INPUT);
@@ -132,18 +140,22 @@ void setup() {
   digitalWrite( btn11, HIGH);  
   pinMode( btn12, INPUT);
   digitalWrite( btn12, HIGH);  
+  
+  pinMode( btn40, INPUT);
+  digitalWrite( btn40, HIGH);  
 
 }
 
 void loop() {
-    br1 = digitalRead(btn1);
+    br1 = digitalRead(btn1);  //Ç®¾÷ ÀĞ¾î¿Â´Ù. MIDIÃâ·Â¿ë
     br2 = digitalRead(btn2);
     br3 = digitalRead(btn3);
     br4 = digitalRead(btn4);
     br5 = digitalRead(btn5);
     br6 = digitalRead(btn6);
+    br40=digitalRead(btn40);
     
-    ledbr1=digitalRead(ledbtn1);
+    ledbr1=digitalRead(ledbtn1);  //Ç®¾÷ ÀĞ¾î¿Â´Ù. LEDÃâ·Â¿ë
     ledbr2=digitalRead(ledbtn2);
     ledbr3=digitalRead(ledbtn3);
     ledbr4=digitalRead(ledbtn4);
@@ -157,50 +169,61 @@ void loop() {
     br11 = digitalRead(btn11);
     br12 = digitalRead(btn12);    
 
-    if(ledbr1==0) //í’€ì—…ì €í•­ ì—°ê²°í•´ ë²„íŠ¼ëˆ„ë¥´ë©´ ledì ë“±
+    if(ledbr1==0) //Ç®¾÷ÀúÇ× ¿¬°áÇØ ¹öÆ°´©¸£¸é ledÁ¡µî
     {
       digitalWrite(42,100);
     }
      else digitalWrite(42,0);
-   if(ledbr2==0) //í’€ì—…ì €í•­ ì—°ê²°í•´ ë²„íŠ¼ëˆ„ë¥´ë©´ ledì ë“±
+   if(ledbr2==0) //Ç®¾÷ÀúÇ× ¿¬°áÇØ ¹öÆ°´©¸£¸é ledÁ¡µî
     {
       digitalWrite(44,100);
     }
      else digitalWrite(44,0);
-   if(ledbr3==0) //í’€ì—…ì €í•­ ì—°ê²°í•´ ë²„íŠ¼ëˆ„ë¥´ë©´ ledì ë“±
+   if(ledbr3==0) //Ç®¾÷ÀúÇ× ¿¬°áÇØ ¹öÆ°´©¸£¸é ledÁ¡µî
     {
       digitalWrite(46,100);
     }
      else digitalWrite(46,0);
-   if(ledbr4==0) //í’€ì—…ì €í•­ ì—°ê²°í•´ ë²„íŠ¼ëˆ„ë¥´ë©´ ledì ë“±
+   if(ledbr4==0) //Ç®¾÷ÀúÇ× ¿¬°áÇØ ¹öÆ°´©¸£¸é ledÁ¡µî
     {
       digitalWrite(48,100);
     }
      else digitalWrite(48,0);
-     if(ledbr5==0) //í’€ì—…ì €í•­ ì—°ê²°í•´ ë²„íŠ¼ëˆ„ë¥´ë©´ ledì ë“±
+     if(ledbr5==0) //Ç®¾÷ÀúÇ× ¿¬°áÇØ ¹öÆ°´©¸£¸é ledÁ¡µî
     {
       digitalWrite(30,1);
     }
      else digitalWrite(30,0);
 
-     if(ledbr6==0) //í’€ì—…ì €í•­ ì—°ê²°í•´ ë²„íŠ¼ëˆ„ë¥´ë©´ ledì ë“±
+     if(ledbr6==0) //Ç®¾÷ÀúÇ× ¿¬°áÇØ ¹öÆ°´©¸£¸é ledÁ¡µî
     {
       digitalWrite(32,1);
     }
      else digitalWrite(32,0);
    
- 
+    
    if( !bs1 && !br1 ){
-    noteOn(0x99, 35,100); //ë¶ì†Œë¦¬      
+    noteOn(0x99, 35,100); // 1¹ø ¹öÆ° ºÏ¼Ò¸®      
      bs1 = true;
+    if(startrecord==1)// ³ìÀ½ ¹öÆ°ÀÌ ´­¸®°í ½ºÅ¸Æ®·¹ÄÚµå¿¡ 1ÀÌ µé¾î ÀÖÀ¸¸é À½¿ø ³Ö±â.
+  {
+  arr[i]=35;
+     i++;
+  }
    }else if(bs1 && br1){
      noteOff(0, 35,0);   
      bs1 = false;
    }
+
    
    if( !bs2 && !br2 ){
-     noteOn(0x99, 51,100);  //ë¶ì†Œë¦¬
+     noteOn(0x99, 51,100);  //ºÏ¼Ò¸®
      bs2 = true;
+     if(startrecord==1)// ³ìÀ½ ¹öÆ°ÀÌ ´­¸®°í ½ºÅ¸Æ®·¹ÄÚµå¿¡ 1ÀÌ µé¾î ÀÖÀ¸¸é À½¿ø ³Ö±â.
+  {
+  arr[i]=51;
+     i++;
+  }
    }else if(bs2 && br2){
      noteOff(0, 51,0);   
      bs2 = false;
@@ -209,6 +232,11 @@ void loop() {
    if( !bs3 && !br3 ){
      noteOn(0x99, 52,100);
      bs3 = true;
+     if(startrecord==1)// ³ìÀ½ ¹öÆ°ÀÌ ´­¸®°í ½ºÅ¸Æ®·¹ÄÚµå¿¡ 1ÀÌ µé¾î ÀÖÀ¸¸é À½¿ø ³Ö±â.
+  {
+  arr[i]=52;
+     i++;
+  }
    }else if(bs3 && br3){
      noteOff(0, 52,0);   
      bs3 = false;
@@ -216,6 +244,11 @@ void loop() {
    if( !bs4 && !br4 ){
      noteOn(0x99, 54,100);
      bs4 = true;
+     if(startrecord==1)// ³ìÀ½ ¹öÆ°ÀÌ ´­¸®°í ½ºÅ¸Æ®·¹ÄÚµå¿¡ 1ÀÌ µé¾î ÀÖÀ¸¸é À½¿ø ³Ö±â.
+  {
+  arr[i]=54;
+     i++;
+  }
    }else if(bs4 && br4){
      noteOff(0, 54,0);   
      bs4 = false;
@@ -223,6 +256,11 @@ void loop() {
    if( !bs5 && !br5 ){
      noteOn(0x99, 55,100);
      bs5 = true;
+     if(startrecord==1)// ³ìÀ½ ¹öÆ°ÀÌ ´­¸®°í ½ºÅ¸Æ®·¹ÄÚµå¿¡ 1ÀÌ µé¾î ÀÖÀ¸¸é À½¿ø ³Ö±â.
+  {
+  arr[i]=55;
+     i++;
+  }
    }else if(bs5 && br5){
      noteOff(0, 55,0);   
      bs5 = false;
@@ -230,6 +268,11 @@ void loop() {
    if( !bs6 && !br6 ){
      noteOn(0x99, 57,100);
      bs6 = true;
+     if(startrecord==1)// ³ìÀ½ ¹öÆ°ÀÌ ´­¸®°í ½ºÅ¸Æ®·¹ÄÚµå¿¡ 1ÀÌ µé¾î ÀÖÀ¸¸é À½¿ø ³Ö±â.
+  {
+  arr[i]=57;
+     i++;
+  }
    }else if(bs6 && br6){
      noteOff(0, 57,0);   
      bs6 = false;
@@ -237,9 +280,7 @@ void loop() {
 
 
 
-
-
-   
+   /*  
    if( !bs7 && !br7 ){
      noteOn(0, bn7,100);
      bs7 = true;
@@ -254,8 +295,9 @@ void loop() {
      noteOff(0, bn8,0);   
      bs8 = false;
    }   
-   
-   if( !bs9 && !br9 ){ //patch up (max:127)
+   */
+  
+   if( !bs9 && !br9 ){ //patch up (max:127) //¾Ç±âº¯°æ
      patch++;
      if(patch >127) patch = 0;
      talkMIDI(0xc0, patch, 0);     
@@ -263,7 +305,7 @@ void loop() {
    }else if(bs9 && br9){
      bs9 = false;
    }   
-   if( !bs10 && !br10 ){ //patch down (min:0)
+   if( !bs10 && !br10 ){ //patch down (min:0) //¾Ç±âº¯°æ
      patch--;
      if(patch < 0) patch = 127;
      talkMIDI(0xc0, patch, 0);       
@@ -292,7 +334,43 @@ void loop() {
    }else if(bs12 && br12){
      bs12 = false;
    }   
-            
+           
+
+  //³ìÀ½
+
+    if( !bs40 && !br40 ){
+  startrecord++;  //ÇöÀç 1·Î ¸¸µé°í ºüÁ®³ª¿Â´Ù.
+      //µÎ ¹øÂ° ´©¸£¸é 2°¡ µÇ°í ³ìÀ½ ÇÑ °ÍÀ» ½ÇÇà
+      //±×¸®°í 0À» ¸¸µé¾î ÃÊ±âÈ­ ÇÑ´Ù.
+  if(startrecord==2) //³ìÀ½ ¹öÆ°À» µÎ ¹øÂ° ´©¸¦ °æ¿ì (³ìÀ½ÀÌ ³¡³­ °æ¿ìÀÇ ¼ö)
+  {
+      for(j=0;j<i;j++)
+    {
+      noteOn(0x90|9, arr[j],100); // ¹è¿­¿¡ µé¾îÀÖ´ø À½ ¹İº¹¹®À¸·Î Àç»ı
+      delay(1000);
+    }
+  startrecord=0;
+  i=0;
+  
+  }
+
+     bs40 = true;
+   }else if(bs40 && br40){
+     bs40 = false;
+   }  
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
   //*************** MIDI LOOPBACK ******************//
   if(Serial.available() > 0)
@@ -304,13 +382,13 @@ void loop() {
 
 }
 
-//ë…¸íŠ¸ ì˜¨ ë¯¸ë”” ë©”ì„¸ì§€ë¥¼ ì†¡ì¶œí•©ë‹ˆë‹¤. ë²„íŠ¼ì´ ëˆŒë¦°ìƒíƒœì™€ ê°™ìŠµë‹ˆë‹¤.
-//ì±„ë„ ë²”ìœ„ëŠ” 0-15 ì…ë‹ˆë‹¤.
+//³ëÆ® ¿Â ¹Ìµğ ¸Ş¼¼Áö¸¦ ¼ÛÃâÇÕ´Ï´Ù. ¹öÆ°ÀÌ ´­¸°»óÅÂ¿Í °°½À´Ï´Ù.
+//Ã¤³Î ¹üÀ§´Â 0-15 ÀÔ´Ï´Ù.
 void noteOn(byte channel, byte note, byte attack_velocity) {
   talkMIDI( (0x90 | channel), note, attack_velocity);
 }
 
-//ë…¸íŠ¸ ì˜¤í”„ ë¯¸ë”” ë©”ì„¸ì§€ë¥¼ ì†¡ì¶œí•©ë‹ˆë‹¤. ë²„íŠ¼ì´ ëˆŒë¦¬ì§€ ì•Šì€ ìƒíƒœì™€ ê°™ìŠµë‹ˆë‹¤.
+//³ëÆ® ¿ÀÇÁ ¹Ìµğ ¸Ş¼¼Áö¸¦ ¼ÛÃâÇÕ´Ï´Ù. ¹öÆ°ÀÌ ´­¸®Áö ¾ÊÀº »óÅÂ¿Í °°½À´Ï´Ù.
 void noteOff(byte channel, byte note, byte release_velocity) {
   talkMIDI( (0x80 | channel), note, release_velocity);
 }
@@ -321,11 +399,10 @@ void talkMIDI(byte cmd, byte data1, byte data2) {
   mySerial.write(cmd );
   mySerial.write(data1 );
 
-  //ëª¨ë“  ëª…ë ¹ì€ 1ë°”ì´íŠ¸ë¥¼ ì§€ë‹ˆë©°, ëª¨ë“  cmdsëŠ”   0xBnë³´ë‹¤  2 ë°ì´í„° ë°”ì´íŠ¸ë¥¼ ëœ ì§€ë‹™ë‹ˆë‹¤.  
+  //¸ğµç ¸í·ÉÀº 1¹ÙÀÌÆ®¸¦ Áö´Ï¸ç, ¸ğµç cmds´Â   0xBnº¸´Ù  2 µ¥ÀÌÅÍ ¹ÙÀÌÆ®¸¦ ´ú Áö´Õ´Ï´Ù.  
   //(sort of: http://253.ccarh.org/handout/midiprotocol/)
   if( (cmd & 0xF0) <= 0xB0)
     mySerial.write(data2 );
 
   digitalWrite(ledPin, LOW);
 }
-
